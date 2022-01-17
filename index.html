@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+
+	<script>
+		var time = 0;
+		var time2 = 0;
+		var time3 = 0;
+		var loraShift = 0;
+		var color = "#ffffff";
+		var data = []
+		
+		function resetLoraSpecto(){
+		loraShift = 0;
+		drawLoraSignal("loramod", [{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "up"}], 8)
+		}
+		
+		function shiftLoraSpecto(){
+			loraShift = loraShift + 0.008;
+			val1 = 20
+			val2 = 180
+			val3 = 30
+			val4 = 200
+			val5 = 120
+			drawLoraSignal("loramod", [{type: "data", value: val1*loraShift},{type: "data", value: val2*loraShift},{type: "data", value: val3*loraShift},{type: "data", value: val4*loraShift},{type: "data", value: val5*loraShift}], 8)
+			
+			if (loraShift<1){
+				setTimeout(shiftLoraSpecto, 1000/60);
+			}
+		}
+		
+		function drawLoraSignal(id, chips, sf){
+		var canvas = document.getElementById(id)
+        var ctx = canvas.getContext('2d')
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#FFFFFF";
+		const sfPow = Math.pow(2,sf)
+
+		var width = canvas.width
+		var height = canvas.height
+		var offsetX = 48
+		var offsetY = 32
+
+        ctx.lineWidth = 4
+        ctx.beginPath();
+        ctx.setLineDash([]);
+        ctx.moveTo(offsetX, height - offsetY);
+        ctx.lineTo(width - offsetX, height - offsetY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.setLineDash([]);
+        ctx.moveTo(offsetX, offsetY);
+        ctx.lineTo(offsetX, height - offsetY);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.setLineDash([15, 10]);
+        ctx.lineWidth = 1
+        ctx.moveTo(offsetX, height / 2);
+        ctx.lineTo(width - offsetX, height / 2);
+        ctx.stroke();
+        ctx.strokeStyle = "#FFFFFF";
+
+        ctx.font = "18px Arial";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+		ctx.fillStyle = "#FFFFFF";
+        ctx.fillText("high", offsetX - 4, offsetY);
+        ctx.fillText("low", offsetX - 4, height - offsetY);
+        ctx.fillText("mid", offsetX - 4, height / 2);
+
+        if (chips.length > 0) {
+            var chirpWidth = (width - offsetX * 2) / chips.length
+            var innerHeight = height - offsetY * 2
+        }
+        for (let i = 0; i < chips.length; i++) {
+            let chip = chips[i]
+            ctx.lineWidth = 2
+            if (chip.type === "data") {
+                var frac = chip.value / sfPow
+
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.moveTo(offsetX + chirpWidth * i, (height - offsetY) - (frac) * innerHeight);
+                ctx.lineTo(offsetX + chirpWidth * i + chirpWidth * (1 - frac), offsetY);
+                ctx.stroke();
+
+                ctx.lineWidth = 1
+                ctx.beginPath();
+                ctx.setLineDash([4, 4]);
+                ctx.moveTo(offsetX + chirpWidth * i + chirpWidth * (1 - frac), offsetY);
+                ctx.lineTo(offsetX + chirpWidth * i + chirpWidth * (1 - frac), height - offsetY);
+                ctx.stroke();
+
+                ctx.lineWidth = 2
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.moveTo(offsetX + chirpWidth * i + chirpWidth * (1 - frac), (height - offsetY));
+                ctx.lineTo(offsetX + chirpWidth * (i + 1), (height - offsetY) - (frac) * innerHeight);
+                ctx.stroke();
+            }
+            if (chip.type === "down") {
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.moveTo(offsetX + chirpWidth * i, offsetY);
+                ctx.lineTo(offsetX + chirpWidth * i + chirpWidth, height - offsetY);
+                ctx.stroke();
+            }
+            if (chip.type === "up") {
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.moveTo(offsetX + chirpWidth * i, height - offsetY);
+                ctx.lineTo(offsetX + chirpWidth * i + chirpWidth, offsetY);
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = "#ebd61e";
+            ctx.beginPath();
+            ctx.setLineDash([15, 10]);
+            ctx.lineWidth = 2
+            ctx.moveTo(offsetX + chirpWidth * (i + 1), offsetY / 2);
+            ctx.lineTo(offsetX + chirpWidth * (i + 1), height - offsetY / 2);
+            ctx.stroke();
+            ctx.strokeStyle = "#FFFFFF";
+        }
+		}
+			
+		function drawLoraSignalDetailed(){
+		const id = "loraDetailed"
+		const chips = [{type: "data", value: 50},{type: "data", value: 80},{type: "data", value: 120}]
+		const sf = 8
+	
+		
+		var canvas = document.getElementById(id)
+		var spreadingFactor = document.getElementById("spreadingFactor");
+        var ctx = canvas.getContext('2d')
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#FFFFFF";
+		const sfPow = Math.pow(2,sf)
+		
+		
+		document.getElementById("spreadingFactorText").innerHTML = (spreadingFactor.value);
+		document.getElementById("symbolRateText").innerHTML = (125000/Math.pow(2,spreadingFactor.value)).toFixed(2);
+		document.getElementById("bitRateText").innerHTML = (spreadingFactor.value*125000/Math.pow(2,spreadingFactor.value)).toFixed(2);
+		document.getElementById("totalTimeText").innerHTML = ((8*40*1000)/(spreadingFactor.value*125000/Math.pow(2,spreadingFactor.value))).toFixed(2);
+
+		var width = canvas.width
+		var height = canvas.height
+		var offsetX = 48
+		var offsetY = 32
+
+        ctx.lineWidth = 4
+        ctx.beginPath();
+        ctx.setLineDash([]);
+        ctx.moveTo(offsetX, height - offsetY);
+        ctx.lineTo(width - offsetX, height - offsetY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.setLineDash([]);
+        ctx.moveTo(offsetX, offsetY);
+        ctx.lineTo(offsetX, height - offsetY);
+        ctx.stroke();
+
+        
+		
+
+        ctx.font = "18px Arial";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+		ctx.fillStyle = "#FFFFFF";
+        ctx.fillText("high", offsetX - 4, offsetY);
+        ctx.fillText("low", offsetX - 4, height - offsetY);
+        ctx.fillText("mid", offsetX - 4, height / 2);
+        ctx.textAlign = "left";
+        ctx.fillText("time", width-offsetX + 4, height - offsetY);
+		
+		
+		
+		const steps = Math.pow(2,spreadingFactor.value)
+		const stepSize = (height - offsetY*2) / steps
+        for (let i = 0; i < steps; i++) {	
+			ctx.beginPath();
+			ctx.setLineDash([15, 10]);
+			ctx.lineWidth = 1
+			ctx.moveTo(offsetX, offsetY + stepSize*i);
+			ctx.lineTo(width - offsetX, offsetY + stepSize*i);
+			ctx.stroke();
+			ctx.fillStyle = "#AAAAAA";
+			ctx.fillText("symbol value: "+(steps-i), offsetX+4, offsetY + stepSize*i+stepSize/2);
+		}
+
+        if (chips.length > 0) {
+            var chirpWidth = (width - offsetX * 2) / chips.length
+            var innerHeight = height - offsetY * 2
+        }
+		
+		
+        ctx.strokeStyle = "#31bda3";
+        ctx.lineWidth = 4
+		ctx.beginPath();
+        ctx.setLineDash([]);
+        ctx.moveTo(offsetX, height - offsetY);
+        ctx.lineTo(offsetX+chirpWidth, height - offsetY);
+        ctx.stroke();
+		
+		
+		ctx.fillStyle = "#31bda3";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        ctx.fillText("symbol time", offsetX + chirpWidth/2, height - offsetY + 4);
+		
+        ctx.strokeStyle = "#ffffff";
+		
+        for (let i = 0; i < chips.length; i++) {
+            let chip = chips[i]
+            ctx.lineWidth = 2
+            if (chip.type === "data") {
+                var frac = chip.value / sfPow
+
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.moveTo(offsetX + chirpWidth * i, (height - offsetY) - (frac) * innerHeight);
+                ctx.lineTo(offsetX + chirpWidth * i + chirpWidth * (1 - frac), offsetY);
+                ctx.stroke();
+
+                ctx.lineWidth = 1
+                ctx.beginPath();
+                ctx.setLineDash([4, 4]);
+                ctx.moveTo(offsetX + chirpWidth * i + chirpWidth * (1 - frac), offsetY);
+                ctx.lineTo(offsetX + chirpWidth * i + chirpWidth * (1 - frac), height - offsetY);
+                ctx.stroke();
+
+                ctx.lineWidth = 2
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.moveTo(offsetX + chirpWidth * i + chirpWidth * (1 - frac), (height - offsetY));
+                ctx.lineTo(offsetX + chirpWidth * (i + 1), (height - offsetY) - (frac) * innerHeight);
+                ctx.stroke();
+            }
+            if (chip.type === "down") {
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.moveTo(offsetX + chirpWidth * i, offsetY);
+                ctx.lineTo(offsetX + chirpWidth * i + chirpWidth, height - offsetY);
+                ctx.stroke();
+            }
+            if (chip.type === "up") {
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.moveTo(offsetX + chirpWidth * i, height - offsetY);
+                ctx.lineTo(offsetX + chirpWidth * i + chirpWidth, offsetY);
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = "#ebd61e";
+            ctx.beginPath();
+            ctx.setLineDash([15, 10]);
+            ctx.lineWidth = 2
+            ctx.moveTo(offsetX + chirpWidth * (i + 1), offsetY / 2);
+            ctx.lineTo(offsetX + chirpWidth * (i + 1), height - offsetY / 2);
+            ctx.stroke();
+            ctx.strokeStyle = "#FFFFFF";
+        }
+		}
+			
+		function drawSinFreq()
+		{
+		var canvas1 = document.getElementById("sinFreq");
+		var dataLine1 = canvas1.getContext("2d");
+						
+						
+		time3 = time3 + 0.2;
+						
+		dataLine1.clearRect(0, 0, canvas1.width, canvas1.height);
+			
+		dataLine1.beginPath();
+		
+						
+		var freq1 = 0.05 + 0.02 * Math.sin(time3*0.1);
+		for(cnt = -1; cnt <= canvas1.width; cnt=cnt+5)
+		{
+			var sig1 = (Math.cos(time3 + cnt * freq1) * 30 )
+			dataLine1.lineTo(cnt, canvas1.height * 0.5 + sig1);
+		}
+						
+		dataLine1.lineWidth = 2;
+		dataLine1.strokeStyle = color;
+		dataLine1.stroke();
+		}
+			
+		function drawFreqMod()
+		{
+		var canvas = document.getElementById("mycanvas");
+		var dataLine = canvas.getContext("2d");
+		var freq = document.getElementById("frequency");
+		var amplitude = document.getElementById("amplitude");
+						
+						
+		time = time + freq.value/400;
+						
+		dataLine.clearRect(0, 0, canvas.width, canvas.height);
+			
+		dataLine.beginPath();
+		<!-- dataLine.moveTo(0, canvas.height * 0.5); -->
+						
+		data.push(canvas.height * 0.5 - (Math.cos(time) * amplitude.value*2 ))
+
+		var spd = 5;
+
+		if (data.length*spd>canvas.width){
+			data.shift()
+		}
+						
+		for(cnt = -1; cnt <= Math.max(canvas.width, data.length); cnt++)
+		{
+			dataLine.lineTo(cnt*spd, data[cnt]);
+		}
+						
+		dataLine.lineWidth = 2;
+		dataLine.strokeStyle = color;
+		dataLine.stroke();
+		}
+		
+		function drawFreqSplit()
+		{
+		var canvas1 = document.getElementById("ffCanvas1");
+		var canvas2 = document.getElementById("ffCanvas2");
+		var canvas3 = document.getElementById("ffCanvas3");
+		var canvas4 = document.getElementById("ffCanvas4");
+		var dataLine1 = canvas1.getContext("2d");
+		var dataLine2 = canvas2.getContext("2d");
+		var dataLine3 = canvas3.getContext("2d");
+		var dataLine4 = canvas4.getContext("2d");
+						
+						
+		time2 = time2 + 0.02;
+						
+		dataLine1.clearRect(0, 0, canvas1.width, canvas1.height);
+		dataLine2.clearRect(0, 0, canvas2.width, canvas2.height);
+		dataLine3.clearRect(0, 0, canvas3.width, canvas3.height);
+		dataLine4.clearRect(0, 0, canvas4.width, canvas4.height);
+			
+		dataLine1.beginPath();
+		dataLine2.beginPath();
+		dataLine3.beginPath();
+		dataLine4.beginPath();
+		
+		var freq1 = 0.05;
+		var freq2 = 0.11;
+		var freq3 = 0.47;
+		
+		var amp1 = 20;
+		var amp2 = 50;
+		var amp3 = 5;
+						
+		for(cnt = -1; cnt <= canvas1.width; cnt=cnt+5)
+		{
+			var sig1 = (Math.cos(time + cnt * freq1) * amp1 )
+			var sig2 = (Math.cos(time + cnt * freq2) * amp2 )
+			var sig3 = (Math.cos(time + cnt * freq3) * amp3 )
+			dataLine1.lineTo(cnt, canvas1.height * 0.5 + sig1+sig2+sig3);
+			dataLine2.lineTo(cnt, canvas2.height * 0.5 + sig1);
+			dataLine3.lineTo(cnt, canvas3.height * 0.5 + sig2);
+			dataLine4.lineTo(cnt, canvas4.height * 0.5 + sig3);
+		}
+						
+		dataLine1.lineWidth = 2;
+		dataLine2.lineWidth = 2;
+		dataLine3.lineWidth = 2;
+		dataLine4.lineWidth = 2;
+		dataLine1.strokeStyle = color;
+		dataLine2.strokeStyle = color;
+		dataLine3.strokeStyle = color;
+		dataLine4.strokeStyle = color;
+		dataLine1.stroke();
+		dataLine2.stroke();
+		dataLine3.stroke();
+		dataLine4.stroke();
+		}
+		
+		setInterval(drawFreqMod, 1000/60);
+		setInterval(drawFreqSplit, 1000/60);
+		setInterval(drawSinFreq, 1000/60);
+	</script>
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js – The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Introducing LoRaWAN</h1>
+					<p>
+						<small>And LoRa!</small>
+					</p>
+				</section>
+				<section>
+					<section>
+						<h2>Motivation</h2>
+					</section>
+					<section>
+						<img src="sensor.jpg" style="height: 400px; margin: auto 40px auto auto;">
+					</section>
+					<section>
+						<img src="pottedPlantHouse.jpg" style="height: 400px; margin: auto 40px auto auto;">
+					</section>
+					<section>
+						<img src="backGarden.jpg" style="height: 400px; margin: auto 40px auto auto;">
+					</section>
+					<section>
+						<img src="farm.jpg" style="height: 400px; margin: auto 40px auto auto;">
+					</section>
+				</section>
+				<section>
+						<h2>LPWAN</h2>
+						<div style="display: flex; margin-top: 40px; align-items: center">
+							<div>
+							<ul>
+								<li>Low Power Wide Area Network</li>
+								<li>Requires modifications on OSI stack</li>
+							</ul>
+							</div>
+							<img src="osi.png" alt="OSI model" style="height: 400px; margin: auto 40px auto auto;">
+						</div>
+				</section>
+				<section>
+					<section>
+						<h2>Wireless Communication</h2>
+					</section>
+					<section>
+						What is a radio?
+						Given a signal, we can either modulate, amplitude, frequency
+						<div data-include="animations.js"></div>
+						<input id="amplitude" type="range" min="5" max="100" step="1" value="20" />
+						<input id="frequency" type="range" min="0" max="100" step="1" value="50" />
+						<canvas id="mycanvas" width="800" height="600"></canvas>
+					</section>
+					<section>
+						Using a receiver we can take in an arbitrary signal and split it into its' components
+						<canvas id="ffCanvas1" width="800" height="200"></canvas>
+						<p class="fragment">
+						<canvas id="ffCanvas2" width="300" height="300"></canvas>
+						<canvas id="ffCanvas3" width="300" height="300"></canvas>
+						<canvas id="ffCanvas4" width="300" height="300"></canvas>
+						</p>
+					</section>
+					<section>
+						<h4>If we map the frequencies to their amplitude over time we get a spectogram</h4>
+						<img src="spectogram.png" alt="Spectogram example" style="height: 520px; margin: 0 auto 4rem auto;">
+					</section>
+					<section>
+						<h4>Sine wave by frequency modulation</h4>
+						<canvas id="sinFreq" style="margin: 80px" width="500" height="100"></canvas>
+						<img src="spectogram2.png" alt="Spectogram example" style="height: 300px; margin: 0 auto 4rem auto;">
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>LoRa</h2>
+					</section>
+					<section>
+						<h2>Chirp modulation</h2>
+						<div style="display: flex; align-items: center">
+							<canvas id="upchirp" style="margin: 80px" width="400px" height="300px"></canvas>
+							<img src="spectogram3.png" alt="Spectogram example" style="height: 250px; margin: auto auto auto auto;">
+						</div>
+					</section>
+					<section>
+						<h2>LoRa Packet beginning</h2>
+						<canvas id="lorabegin" width="1000" height="400"></canvas>
+						10 up chirps followed by 2 down chirps
+					</section>
+					<section>
+						<h2>Real world example</h2>
+						<img src="spectogramPython.png" alt="Python Spectogram" style="height: 480px; margin: auto auto auto auto;">
+					</section>
+					<section>
+						<h2>Data</h2>
+						<canvas id="loramod" width="900" height="400"></canvas>
+						<br/>
+						<div>
+						<button onclick="shiftLoraSpecto()">Phase shift</button>
+						<button onclick="resetLoraSpecto()">Reset</button>
+						</div>
+					</section>
+					<section>
+					  <h2>Spreading Factor</h2>
+					  <div class="r-hstack justify-center" style="display: flex;">
+					  <canvas id="loraDetailed" width="900" height="560"></canvas>
+					  <div style="margin-right: 20px">
+					  \[\begin{aligned}
+					  &symbol \ rate = \frac{BW}{2^{SF}} \\
+					  &bitrate = SF * \frac{BW}{2^{SF}}
+					  \end{aligned} \]
+					  <input id="spreadingFactor" onInput="drawLoraSignalDetailed()" type="range" min="1" max="5" step="1" value="3" />
+					  <div style="font-size: 24px">Assuming BW=125 khz
+					  <br/>
+					  Spreading Factor: <span id="spreadingFactorText"></span>
+					  <br/>
+					  Symbol rate: <span id="symbolRateText"></span>
+					  <br/>
+					  Bit rate: <span id="bitRateText"></span>
+					  <br/>
+					  Total time (40 bytes): <span id="totalTimeText"></span>ms</p>
+					  </div>
+					  </div>
+					</section>
+					<section>
+						<h2>Other LoRa quirks</h2>
+					</section>
+					<section>
+						<h2>What kind of range do you get?</h2>
+						<img src="randersField.png" alt="Home sweet home" style="height: 300px; margin: auto auto auto auto;">
+						<img src="randersFjord.jpg" alt="Country road" style="height: 300px; margin: auto auto auto auto;">
+						<img src="TTGOField.jpg" alt="LoRa in the field B-)" style="height: 300px; margin: auto auto auto auto;">
+					</section>
+					<section>
+						<h2>That's LoRa!</h2>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>LoRaWAN</h2>
+						<img class="fragment" src="osi.png" alt="OSI model" style="height: 400px; margin: auto 40px auto auto;">
+					</section>
+					<section>
+						<h2>LoRa Alliance</h2>
+					</section>
+					<section>
+						<h2>Topology</h2>
+						Node, gateway, network + app server
+						<img src="Topology.png" alt="LoRaWAN topology" style="height: 300px; margin: auto auto auto auto;">
+					</section>
+					<section>
+						<h2>The Node</h2>
+						<div style="display: flex; margin-top: 40px; align-items: center">
+							<img src="node.png" alt="Home sweet home" style="height: 300px; margin: auto 40px auto auto;">
+							<div>
+							<ul>
+								<li>Often battery powered</li>
+								<li>Exists in different classes</li>
+							</ul>
+							</div>
+						</div>
+					</section>
+					<section>
+						<h2>Addressing</h2>
+							<ul>
+								<li>DevEUI uniquely identifies a device</li>
+								<li>DevAddr is the device address (non unique)</li>
+								<li>AppEUI identifies a LoRaWAN application</li>
+							</ul>
+					</section>
+					<section>
+						<h2>The Gateway</h2>
+						<div style="display: flex; margin-top: 40px; align-items: center">
+							<img src="gateway.png" alt="Home sweet home" style="height: 300px; margin: auto 40px auto auto;">
+							<div>
+							<ul>
+								<li>Has multiple radios</li>
+								<li>Forwards packets to network server</li>
+								<li>Has both a LoRa based and traditional physical layer</li>
+							</ul>
+							</div>
+						</div>
+					</section>
+					<section>
+						<h2>The Network + App server</h2>
+						<div style="display: flex; margin-top: 40px; align-items: center">
+							<img src="server.png" alt="Home sweet home" style="height: 300px; margin: auto 40px auto auto;">
+							<div>
+							<ul>
+								<li>Handles message duplication</li>
+								<li>Encryption, decryption</li>
+								<li>Handles downlinks</li>
+							</ul>
+							</div>
+						</div>
+					</section>
+					<section>
+						<h2>UpLink</h2>
+						<div style="display: flex; margin-top: 40px; align-items: center">
+						<p class="fragment grow"><img style="width: 120px; object-fit: cover; margin: 64px" src="node.png"></p>
+						<p class="fragment grow"><img style="width: 120px; object-fit: cover; margin: 64px" src="gateway.png"></p>
+						<p class="fragment grow"><img style="width: 120px; object-fit: cover; margin: 64px" src="server.png"></p>
+						<p class="fragment grow"><img style="width: 120px; object-fit: cover; margin: 64px" src="server.png"></p>
+						</div>
+						
+						
+					</section>
+					<section>
+						<h2>Downlink</h2>
+						<img style="height: 500px; margin: auto auto auto auto" src="classes.png">
+					</section>
+					<section>
+						<h2>OTAA</h2>
+							<ul>
+								<li class="fragment">End Node sends a join request (uplink), usually with an app key</li>
+								<li class="fragment">Application server evaluates join request, and sends join accept (with devAddr and keys)</li>
+								<li class="fragment">Join request is sent via downlink, and device can begin broadcasting</li>
+							</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>LoRaWAN in practice</h2>
+					</section>
+					<section>
+						<h2>LoRaWAN networks</h2>
+						<img src="cellTower.jpg" alt="Cell tower" style="height: 300px; margin: auto 64px auto auto;">
+						<img src="thingsNetwork.png" alt="Things network" style="height: 300px; margin: auto auto auto auto;">
+					</section>
+					<section>
+						<h2><img src="chirpstackLogo.png"></h2>
+						<div style="display: flex; margin-top: 40px; align-items: center">
+							<img src="chirpstack.png" alt="Chirpstack" style="height: 300px; margin: auto 40px auto auto;">
+							<div>
+							<ul>
+								<li>Open Source!</li>
+								<li>Supports most features of LoRaWAN</li>
+							</ul>
+							</div>
+						</div>
+					</section>
+					<section>
+						<h2>Gateways</h2>
+						<img src="gatewayBuy.png" alt="Chirpstack" style="height: 300px; margin: auto 40px auto auto;">
+					</section>
+					<section>
+						<h2>LoRaWAN nodes</h2>
+						<img src="gps.jpg" style="height: 300px; margin: auto auto auto auto;">
+						<img src="node1.jpg" style="height: 300px; margin: auto auto auto auto;">
+						<img src="node2.jpg" alt="LoRa in the field B-)" style="height: 300px; margin: auto auto auto auto;">
+						<br>Demo time!
+					</section>
+				</section>
+				<section>
+					<h2>In Conclusion</h2>
+						<ul>
+							<li>The most well known wireless technologies have limitations that are best solved by LPWAN</li>
+							<li>We can transmit information by modulating radio waves, and demodulate signals</li>
+							<li>LoRa works by sending chirps with different offsets</li>
+							<li>LoRaWAN is a network structure built on top of LoRa</li>
+							<li>It's easy to get started yourself!</li>
+						</ul>
+				</section>
+				<section>
+				<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+				<div>Icons made by <a href="https://www.flaticon.com/authors/srip" title="srip">srip</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+				</section>
+				<section>
+					<h2>Questions</h2>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/search/search.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script>
+		  Reveal.initialize({
+			math: {
+			  mathjax: 'https://cdn.jsdelivr.net/gh/mathjax/mathjax@2.7.8/MathJax.js',
+			  config: 'TeX-AMS_HTML-full',
+			  // pass other options into `MathJax.Hub.Config()`
+			  TeX: { Macros: { RR: "{\\bf R}" } }
+			},
+			plugins: [ RevealMath ]
+		  });
+		</script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+		
+		drawLoraSignal("upchirp", [{type: "up"}], 8)
+		drawLoraSignal("lorabegin", [{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "down"},{type: "down"}], 8)
+		drawLoraSignal("loramod", [{type: "up"},{type: "up"},{type: "up"},{type: "up"},{type: "up"}], 8)
+		drawLoraSignalDetailed()
+
+			// Also available as an ES module, see:
+			// https://revealjs.com/initialization/
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight ]
+			});
+
+		</script>
+
+	</body>
+</html>
