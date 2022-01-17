@@ -388,7 +388,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>reveal.js – The HTML Presentation Framework</title>
+		<title>Presentation on LoRa</title>
 
 		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
 		<meta name="author" content="Hakim El Hattab">
@@ -413,9 +413,9 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Introducing LoRaWAN</h1>
+					<h1>Introducing LoRa</h1>
 					<p>
-						<small>And LoRa!</small>
+						<small>Long Range communication</small>
 					</p>
 				</section>
 				<section>
@@ -530,9 +530,6 @@
 					  </div>
 					</section>
 					<section>
-						<h2>Other LoRa quirks</h2>
-					</section>
-					<section>
 						<h2>What kind of range do you get?</h2>
 						<img src="randersField.png" alt="Home sweet home" style="height: 300px; margin: auto auto auto auto;">
 						<img src="randersFjord.jpg" alt="Country road" style="height: 300px; margin: auto auto auto auto;">
@@ -541,132 +538,6 @@
 					<section>
 						<h2>That's LoRa!</h2>
 					</section>
-				</section>
-				<section>
-					<section>
-						<h2>LoRaWAN</h2>
-						<img class="fragment" src="osi.png" alt="OSI model" style="height: 400px; margin: auto 40px auto auto;">
-					</section>
-					<section>
-						<h2>LoRa Alliance</h2>
-					</section>
-					<section>
-						<h2>Topology</h2>
-						Node, gateway, network + app server
-						<img src="Topology.png" alt="LoRaWAN topology" style="height: 300px; margin: auto auto auto auto;">
-					</section>
-					<section>
-						<h2>The Node</h2>
-						<div style="display: flex; margin-top: 40px; align-items: center">
-							<img src="node.png" alt="Home sweet home" style="height: 300px; margin: auto 40px auto auto;">
-							<div>
-							<ul>
-								<li>Often battery powered</li>
-								<li>Exists in different classes</li>
-							</ul>
-							</div>
-						</div>
-					</section>
-					<section>
-						<h2>Addressing</h2>
-							<ul>
-								<li>DevEUI uniquely identifies a device</li>
-								<li>DevAddr is the device address (non unique)</li>
-								<li>AppEUI identifies a LoRaWAN application</li>
-							</ul>
-					</section>
-					<section>
-						<h2>The Gateway</h2>
-						<div style="display: flex; margin-top: 40px; align-items: center">
-							<img src="gateway.png" alt="Home sweet home" style="height: 300px; margin: auto 40px auto auto;">
-							<div>
-							<ul>
-								<li>Has multiple radios</li>
-								<li>Forwards packets to network server</li>
-								<li>Has both a LoRa based and traditional physical layer</li>
-							</ul>
-							</div>
-						</div>
-					</section>
-					<section>
-						<h2>The Network + App server</h2>
-						<div style="display: flex; margin-top: 40px; align-items: center">
-							<img src="server.png" alt="Home sweet home" style="height: 300px; margin: auto 40px auto auto;">
-							<div>
-							<ul>
-								<li>Handles message duplication</li>
-								<li>Encryption, decryption</li>
-								<li>Handles downlinks</li>
-							</ul>
-							</div>
-						</div>
-					</section>
-					<section>
-						<h2>UpLink</h2>
-						<div style="display: flex; margin-top: 40px; align-items: center">
-						<p class="fragment grow"><img style="width: 120px; object-fit: cover; margin: 64px" src="node.png"></p>
-						<p class="fragment grow"><img style="width: 120px; object-fit: cover; margin: 64px" src="gateway.png"></p>
-						<p class="fragment grow"><img style="width: 120px; object-fit: cover; margin: 64px" src="server.png"></p>
-						<p class="fragment grow"><img style="width: 120px; object-fit: cover; margin: 64px" src="server.png"></p>
-						</div>
-						
-						
-					</section>
-					<section>
-						<h2>Downlink</h2>
-						<img style="height: 500px; margin: auto auto auto auto" src="classes.png">
-					</section>
-					<section>
-						<h2>OTAA</h2>
-							<ul>
-								<li class="fragment">End Node sends a join request (uplink), usually with an app key</li>
-								<li class="fragment">Application server evaluates join request, and sends join accept (with devAddr and keys)</li>
-								<li class="fragment">Join request is sent via downlink, and device can begin broadcasting</li>
-							</ul>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>LoRaWAN in practice</h2>
-					</section>
-					<section>
-						<h2>LoRaWAN networks</h2>
-						<img src="cellTower.jpg" alt="Cell tower" style="height: 300px; margin: auto 64px auto auto;">
-						<img src="thingsNetwork.png" alt="Things network" style="height: 300px; margin: auto auto auto auto;">
-					</section>
-					<section>
-						<h2><img src="chirpstackLogo.png"></h2>
-						<div style="display: flex; margin-top: 40px; align-items: center">
-							<img src="chirpstack.png" alt="Chirpstack" style="height: 300px; margin: auto 40px auto auto;">
-							<div>
-							<ul>
-								<li>Open Source!</li>
-								<li>Supports most features of LoRaWAN</li>
-							</ul>
-							</div>
-						</div>
-					</section>
-					<section>
-						<h2>Gateways</h2>
-						<img src="gatewayBuy.png" alt="Chirpstack" style="height: 300px; margin: auto 40px auto auto;">
-					</section>
-					<section>
-						<h2>LoRaWAN nodes</h2>
-						<img src="gps.jpg" style="height: 300px; margin: auto auto auto auto;">
-						<img src="node1.jpg" style="height: 300px; margin: auto auto auto auto;">
-						<img src="node2.jpg" alt="LoRa in the field B-)" style="height: 300px; margin: auto auto auto auto;">
-						<br>Demo time!
-					</section>
-				</section>
-				<section>
-					<h2>In Conclusion</h2>
-						<ul>
-							<li>The most well known wireless technologies have limitations that are best solved by LPWAN</li>
-							<li>We can transmit information by modulating radio waves, and demodulate signals</li>
-							<li>LoRa works by sending chirps with different offsets</li>
-							<li>LoRaWAN is a network structure built on top of LoRa</li>
-							<li>It's easy to get started yourself!</li>
-						</ul>
 				</section>
 				<section>
 				<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
